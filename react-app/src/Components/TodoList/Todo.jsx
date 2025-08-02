@@ -1,11 +1,13 @@
 import "../../App.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import TodoItem from "./TodoItem";
 
 function Todo() {
   const [todoItem, setTodoItem] = useState("");
   const [todoList, setTodoList] = useState([]);
   const [editInput, setEditInput] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   function handleTodoItemChange(event) {
     setTodoItem(event.target.value);
@@ -15,22 +17,20 @@ function Todo() {
   }
 
   function addTodoItem() {
-    if (todoItem.length) {
-      const newItem = { id: uuidv4(), value: todoItem, isEditing: false };
+    if (todoItem.trim().length) {
+      const newItem = { id: uuidv4(), value: todoItem };
       setTodoList([...todoList, newItem]);
       setTodoItem("");
     }
   }
 
   function editTodo(item) {
-    const newList = todoList.map((todo) => {
-      if (todo.id == item.id) {
-        setEditInput(item.value);
-        return { ...todo, isEditing: true };
-      }
-      return todo;
-    });
-    setTodoList(newList);
+    if (editingId != null) {
+      alert("Save the current item.");
+      return;
+    }
+    setEditInput(item.value);
+    setEditingId(item.id);
   }
 
   function deleteTodo(id) {
@@ -38,25 +38,21 @@ function Todo() {
     setTodoList(newList);
   }
 
-  function saveTodo(id, newValue) {
-    if (newValue.trim() === "") return;
+  function saveTodo(id) {
+    if (editInput.trim() === "") return;
     const newList = todoList.map((todo) => {
-      if (todo.id == id) {
-        return { ...todo, value: newValue, isEditing: false };
+      if (todo.id === id) {
+        return { ...todo, value: editInput };
       }
       return todo;
     });
     setTodoList(newList);
+    setEditingId(null);
   }
 
-  function cancelEdit(id) {
-    const newList = todoList.map((todo) => {
-      if (todo.id == id) {
-        return { ...todo, isEditing: false };
-      }
-      return todo;
-    });
-    setTodoList(newList);
+  function cancelEdit() {
+    setEditInput("");
+    setEditingId(null);
   }
   return (
     <>
@@ -72,27 +68,17 @@ function Todo() {
       <div id="todo-list">
         <ul>
           {todoList.map((item) => (
-            <li key={item.id}>
-              {item.isEditing ? (
-                <>
-                  <input value={editInput} onChange={handleEditInput} />
-                  <div className="todo-actions">
-                    <button onClick={() => saveTodo(item.id, editInput)}>
-                      Save
-                    </button>
-                    <button onClick={() => cancelEdit(item.id)}>Cancel</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span>{item.value}</span>
-                  <div className="todo-actions">
-                    <button onClick={() => editTodo(item)}>Edit</button>
-                    <button onClick={() => deleteTodo(item.id)}>Delete</button>
-                  </div>
-                </>
-              )}
-            </li>
+            <TodoItem
+              key={item.id}
+              item={item}
+              editingId={editingId}
+              editInput={editInput}
+              handleEditInput={handleEditInput}
+              saveTodo={saveTodo}
+              cancelEdit={cancelEdit}
+              editTodo={editTodo}
+              deleteTodo={deleteTodo}
+            />
           ))}
         </ul>
       </div>
