@@ -15,17 +15,17 @@ body {
   padding: 40px 20px;
 }
 
-/* #root {
+#root {
   width: 100%;
   max-width: 500px;
 } */
 
-/* Container
+
 div {
   background: #2c2c3e;
   padding: 24px;
   border-radius: 12px;
-} */
+}
 
 /* Input + Button Group */
 div > input {
@@ -43,7 +43,7 @@ div > input:focus {
   outline: 2px solid #00bcd4;
 }
 
-/* div > button {
+div > button {
   padding: 10px 16px;
   font-size: 1rem;
   background-color: #00bcd4;
@@ -51,7 +51,7 @@ div > input:focus {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-} */
+}
 
 /* Todo List */
 .todo-list-title {
