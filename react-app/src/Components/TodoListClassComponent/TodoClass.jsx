@@ -1,7 +1,7 @@
 import { Component } from "react";
 import TodoItemClass from "./TodoItemClass";
 import { v4 as uuidv4 } from "uuid";
-import "../../App.css";
+import "./TodoClass.css";
 
 class TodoClass extends Component {
   constructor(props) {
