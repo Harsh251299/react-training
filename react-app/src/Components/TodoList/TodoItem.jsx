@@ -1,62 +1,86 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
+import { TodoContext } from "./TodoContext.jsx";
 
-export default function TodoItem(props) {
+export default function TodoItem({
+  item,
+  editingId,
+  editInput,
+  handleEditInput,
+}) {
   const inputRef = useRef(null);
+  const { dispatch } = useContext(TodoContext);
+
   useEffect(() => {
-    if (props.editingId === props.item.id) {
+    if (editingId === item.id) {
       inputRef.current?.focus();
     }
-  }, [props.editingId]);
+  }, [editingId]);
+
+  const editTodo = () => {
+    if (editingId !== null) {
+      alert("Save the current item.");
+      return;
+    }
+    dispatch({ type: "EDIT_TODO", payload: item });
+  };
+
+  const saveTodo = () => {
+    if (editInput.trim() === "") return;
+    dispatch({ type: "SAVE_TODO", payload: item.id });
+  };
+
+  const cancelEdit = () => {
+    dispatch({ type: "CANCEL_EDIT" });
+  };
+
+  const deleteTodo = () => {
+    dispatch({ type: "DELETE_TODO", payload: item.id });
+  };
+
+  const toggleCompleted = () => {
+    if (editingId === item.id) {
+      alert("Save the current item.");
+      return;
+    }
+    dispatch({ type: "TOGGLE_TODO", payload: item.id });
+  };
 
   return (
     <>
       <li>
-        {props.item.id === props.editingId ? (
+        {item.id === editingId ? (
           <>
             <input
               ref={inputRef}
-              value={props.editInput}
-              onChange={props.handleEditInput}
+              value={editInput}
+              onChange={handleEditInput}
             />
             <div className="todo-actions">
-              <button
-                className="save-edit-btn"
-                onClick={() => props.saveTodo(props.item.id)}
-              >
+              <button className="save-edit-btn" onClick={saveTodo}>
                 Save
               </button>
-              <button className="delete-cancel-btn" onClick={props.cancelEdit}>
+              <button className="delete-cancel-btn" onClick={cancelEdit}>
                 Cancel
               </button>
-              <button
-                className="toggle-btn"
-                onClick={() => props.toggleCompleted(props.item.id)}
-              >
-                {props.item.isCompleted ? "←" : "→"}
+              <button className="toggle-btn" onClick={toggleCompleted}>
+                {item.isCompleted ? "←" : "→"}
               </button>
             </div>
           </>
         ) : (
           <>
-            <span>{props.item.value}</span>
+            <span>{item.value}</span>
             <div className="todo-actions">
-              { !props.item.isCompleted && <button
-                className="save-edit-btn"
-                onClick={() => props.editTodo(props.item)}
-              >
-                Edit
-              </button>}
-              <button
-                className="delete-cancel-btn"
-                onClick={() => props.deleteTodo(props.item.id)}
-              >
+              {!item.isCompleted && (
+                <button className="save-edit-btn" onClick={editTodo}>
+                  Edit
+                </button>
+              )}
+              <button className="delete-cancel-btn" onClick={deleteTodo}>
                 Delete
               </button>
-              <button
-                className="toggle-btn"
-                onClick={() => props.toggleCompleted(props.item.id)}
-              >
-                {props.item.isCompleted ? "←" : "→"}
+              <button className="toggle-btn" onClick={toggleCompleted}>
+                {item.isCompleted ? "←" : "→"}
               </button>
             </div>
           </>
