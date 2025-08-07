@@ -1,15 +1,13 @@
 import "./Todo.css";
-import { useState, useMemo, useCallback, useContext } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import TodoItem from "./TodoItem";
-import { TodoContext } from "./TodoContext.jsx";
 
 function Todo() {
   const [todoItem, setTodoItem] = useState("");
-  const {
-    state: { todoList, editInput, editingId },
-    dispatch,
-  } = useContext(TodoContext);
+  const [todoList, setTodoList] = useState([]);
+  const [editInput, setEditInput] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   const pendingTodos = useMemo(
     () => todoList.filter((todo) => !todo.isCompleted),
@@ -21,23 +19,74 @@ function Todo() {
     [todoList]
   );
 
-  function handleEditInput(e) {
-    dispatch({ type: "SET_EDIT_INPUT", payload: e.target.value });
+  function handleTodoItemChange(event) {
+    setTodoItem(event.target.value);
+  }
+  function handleEditInput(event) {
+    setEditInput(event.target.value);
   }
 
-  function addTodoItem() {
+  const addTodoItem = useCallback(() => {
     if (todoItem.trim().length) {
-      dispatch({ type: "ADD_TODO", payload: todoItem });
+      const newItem = { id: uuidv4(), value: todoItem, isCompleted: false };
+      setTodoList([...todoList, newItem]);
       setTodoItem("");
     }
+  }, [todoItem]);
+
+  function editTodo(item) {
+    if (editingId != null) {
+      alert("Save the current item.");
+      return;
+    }
+    setEditInput(item.value);
+    setEditingId(item.id);
   }
 
+  function deleteTodo(id) {
+    const newList = todoList.filter((item) => item.id != id);
+    setTodoList(newList);
+  }
+
+  const saveTodo = useCallback(
+    (id) => {
+      if (editInput.trim() === "") return;
+      const newList = todoList.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, value: editInput };
+        }
+        return todo;
+      });
+      setTodoList(newList);
+      setEditingId(null);
+    },
+    [editInput]
+  );
+
+  function cancelEdit() {
+    setEditInput("");
+    setEditingId(null);
+  }
+
+  function toggleCompleted(id) {
+    if (editingId === id) {
+      alert("Save the current item.");
+      return;
+    }
+    const newList = todoList.map((todo) => {
+      if (todo.id === id) {
+        return { ...todo, isCompleted: !todo.isCompleted };
+      }
+      return todo;
+    });
+    setTodoList(newList);
+  }
   return (
     <>
       <div className="input-container">
         <input
           value={todoItem}
-          onChange={(e) => setTodoItem(e.target.value)}
+          onChange={handleTodoItemChange}
           placeholder="Add task to the list"
         />
         <button onClick={addTodoItem}>Add</button>
@@ -54,6 +103,11 @@ function Todo() {
                   editingId={editingId}
                   editInput={editInput}
                   handleEditInput={handleEditInput}
+                  saveTodo={saveTodo}
+                  cancelEdit={cancelEdit}
+                  editTodo={editTodo}
+                  deleteTodo={deleteTodo}
+                  toggleCompleted={toggleCompleted}
                 />
               ))}
             </ul>
@@ -71,6 +125,11 @@ function Todo() {
                   editingId={editingId}
                   editInput={editInput}
                   handleEditInput={handleEditInput}
+                  saveTodo={saveTodo}
+                  cancelEdit={cancelEdit}
+                  editTodo={editTodo}
+                  deleteTodo={deleteTodo}
+                  toggleCompleted={toggleCompleted}
                 />
               ))}
             </ul>
