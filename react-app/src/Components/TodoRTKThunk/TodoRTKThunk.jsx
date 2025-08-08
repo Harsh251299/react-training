@@ -3,7 +3,13 @@ import { useState, useMemo, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import TodoItemRTKThunk from "./TodoItemRTKThunk";
 import { useSelector, useDispatch } from "react-redux";
-import { add, fetchInitialTodo } from "./TodoSliceRTKThunk";
+import {
+  add,
+  edit,
+  deleteT,
+  toggle,
+  fetchInitialTodo,
+} from "./TodoSliceRTKThunk";
 
 function TodoRTKThunk() {
   const [todoItem, setTodoItem] = useState("");
@@ -37,9 +43,7 @@ function TodoRTKThunk() {
   const addTodoItem = () => {
     if (todoItem.trim().length) {
       console.log("1:- Inside addTodoItem function from TodoRedux.jsx");
-      dispatch(
-        add({ id: uuidv4(), value: todoItem, isCompleted: false })
-      );
+      dispatch(add({ id: uuidv4(), value: todoItem, isCompleted: false }));
       setTodoItem("");
     }
   };
@@ -55,13 +59,13 @@ function TodoRTKThunk() {
 
   function deleteTodo(id) {
     console.log("1:- Inside deleteTodo function from TodoRedux.jsx");
-    dispatch({ type: "DELETE_TODO", id });
+    dispatch(deleteT({ id }));
   }
 
   const saveTodo = (id) => {
     if (editInput.trim() === "") return;
     console.log("1:- Inside saveTodo function from TodoRedux.jsx");
-    dispatch({ type: "EDIT_TODO", id, value: editInput });
+    dispatch(edit({ id, value: editInput }));
     setEditInput("");
     setEditingId(null);
   };
@@ -77,7 +81,7 @@ function TodoRTKThunk() {
       return;
     }
     console.log("1:- Inside toggleCompleted function from TodoRedux.jsx");
-    dispatch({ type: "TOGGLE_TODO", id });
+    dispatch(toggle({ id }));
   }
   return (
     <>

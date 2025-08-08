@@ -35,18 +35,37 @@ export const TodoSliceRTKThunk = createSlice({
     },
     reducers: {
         add: (state, action) => {
-            console.log(action);
+            console.log("2:- Inside the add reducer")
             const todo = state.todoList.push(action.payload)
+        },
+        edit: (state, action) => {
+            console.log("2:- Inside the edit reducer")
+            const todo = state.todoList.find(t => t.id == action.payload.id);
+            if (todo) {
+                todo.value = action.payload.value
+            }
+        },
+        deleteT: (state, action) => {
+            console.log("2:- Inside the delete reducer")
+            const newList = state.todoList.filter(t => t.id !== action.payload.id)
+            state.todoList = newList
+        },
+        toggle: (state, action) => {
+            console.log("3:- Inside the toggle reducer")
+            const todo = state.todoList.find(t => t.id == action.payload.id)
+            if (todo) {
+                todo.isCompleted = !todo.isCompleted
+            }
         }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchInitialTodo.fulfilled, (state, action) => {
-            console.log("Thunk action payload", action.payload);
+            console.log("0:- Thunk action payload", action.payload);
             state.todoList = action.payload;
             state.loading = false;
-            console.log("State Value", state);
         });
         builder.addCase(fetchInitialTodo.pending, (state) => {
+            console.log("Loading State")
             state.loading = true;
         });
         builder.addCase(fetchInitialTodo.rejected, (state) => {
@@ -54,4 +73,4 @@ export const TodoSliceRTKThunk = createSlice({
         })
     }
 })
-export const { add } = TodoSliceRTKThunk.actions;
+export const { add, edit, deleteT, toggle } = TodoSliceRTKThunk.actions;
