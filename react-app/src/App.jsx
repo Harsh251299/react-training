@@ -5,14 +5,17 @@ import { TodoProvider } from "./Components/TodoListUseContextandReducers/TodoCon
 import TodoClass from "./Components/TodoListClassComponent/TodoClass";
 import TodoListContext from "./Components/TodoListUseContextandReducers/TodoListContext";
 import TodoRedux from "./Components/TodoRedux/TodoRedux";
-import store from "./Components/TodoRedux/store";
+// import store from "./Components/TodoRedux/store";
 import { Provider } from "react-redux";
+import store from "./Components/TodoRTKThunk/storeRTKThunk";
+import TodoRTKThunk from "./Components/TodoRTKThunk/TodoRTKThunk";
 
 function App() {
   return (
     <>
       <Provider store={store}>
-        <TodoRedux />
+        {/* <TodoRedux /> */}
+        <TodoRTKThunk />
       </Provider>
 
       {/* <TodoProvider>
